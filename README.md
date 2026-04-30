@@ -1,4 +1,4 @@
-# Sistema de Hospedagem - Maraú BA
+# Sistema de Hospedagem
 
 Trabalho Prático da disciplina **Programação Modular** — Engenharia de Software, PUC Minas.
 
