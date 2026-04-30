@@ -1,8 +1,8 @@
 # Sistema de Hospedagem - Maraú BA
 
-Trabalho Prático da disciplina **Programação Modular** — Bacharelado em Engenharia de Software, PUC Minas.
+Trabalho Prático da disciplina **Programação Modular** — Engenharia de Software, PUC Minas.
 
-Sistema de informação modular com API REST para gerenciamento de hospedagens residenciais em Maraú – BA, desenvolvido com Spring Boot e arquitetura em camadas.
+Sistema de informação modular com API REST para gerenciamento de hospedagens residenciais, desenvolvido com Spring Boot e arquitetura em camadas.
 
 ---
 
