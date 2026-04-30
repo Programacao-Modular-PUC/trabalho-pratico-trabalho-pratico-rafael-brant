@@ -8,21 +8,21 @@ Sistema de informação modular com API REST para gerenciamento de hospedagens r
 
 ## Funcionalidades
 
-- Gerenciamento de residências e quartos (individual ou casal)
-- Cadastro e consulta de clientes
-- Realização de reservas e aluguéis com verificação de disponibilidade
-- Cálculo automático de diárias (regra das 12h)
-- Emissão de formulário de aluguel
-- Histórico de hospedagens por residência
-- Geração de pagamento associado ao aluguel
+- Gerenciamento de residências e quartos.
+- Cadastro e consulta de clientes.
+- Realização de reservas e aluguéis com verificação de disponibilidade.
+- Cálculo automático de diárias (regra das 12h).
+- Emissão de formulário de aluguel.
+- Histórico de hospedagens por residência.
+- Geração de pagamento associado ao aluguel.
 
 ## Regras de Negócio
 
-- Diárias iniciam às 12h; entrada após 12h conta como diária completa
-- Saída após 12h adiciona uma nova diária
-- Valor da diária = valor base + adicionais (ar condicionado e/ou hidromassagem)
-- Um quarto não pode ser alugado se já estiver ocupado no período solicitado
-- Todo aluguel gera um pagamento associado
+- Diárias iniciam às 12h; entrada após 12h conta como diária completa.
+- Saída após 12h adiciona uma nova diária.
+- Valor da diária = valor base + adicionais (ar condicionado e/ou hidromassagem).
+- Um quarto não pode ser alugado se já estiver ocupado no período solicitado.
+- Todo aluguel gera um pagamento associado.
 
 ## Tecnologias
 
@@ -32,9 +32,6 @@ Sistema de informação modular com API REST para gerenciamento de hospedagens r
 | Spring Boot      | 3.2.5   |
 | Spring Data JPA  | —       |
 | MySQL            | 8+      |
-| Lombok           | —       |
-| JUnit 5          | —       |
-| H2 (testes)      | —       |
 
 ## Arquitetura
 
