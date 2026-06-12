@@ -22,6 +22,16 @@ public class AluguelController {
         return service.listarTodos();
     }
 
+    @GetMapping("/tipo")
+    public List<Aluguel> filtrarPorTipoQuarto(@RequestParam String tipoQuarto) {
+        return service.filtrarPorTipoQuarto(tipoQuarto);
+    }
+
+    @GetMapping("/cliente/{clienteId}")
+    public List<Aluguel> listarPorCliente(@PathVariable Long clienteId) {
+        return service.listarPorCliente(clienteId);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Aluguel> buscarPorId(@PathVariable Long id) {
         return service.buscarPorId(id)
@@ -40,6 +50,13 @@ public class AluguelController {
             aluguel.setId(id);
             return ResponseEntity.ok(service.salvar(aluguel));
         }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<Aluguel> cancelar(@PathVariable Long id) {
+        return service.cancelarAluguel(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
