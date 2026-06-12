@@ -18,11 +18,11 @@ class QuartoCasalTest {
     }
 
     @Test
-    @DisplayName("Deve calcular diária de casal corretamente")
+    @DisplayName("Deve calcular diária de casal corretamente com tipo CASAL")
     void testCalcularValorDiariaQuartoCasal() {
         double valor = quarto.calcularValorDiaria(2);
-        // Valor base (200) + ar (50) + hidro (80) = 330
-        assertEquals(330.0, valor, "Valor deve ser 330 para 2 hóspedes");
+        // Valor base (200) + ar (50) + hidro (80) + adicional CASAL (20) = 350
+        assertEquals(350.0, valor, "Valor deve ser 350 para 2 hóspedes com cama casal");
     }
 
     @Test
@@ -73,8 +73,8 @@ class QuartoCasalTest {
     void testCalcularValorDiariaComTaxaBerco() {
         QuartoCasal quartoComBerco = new QuartoCasal(200.0, true, true, true);
         double valor = quartoComBerco.calcularValorDiaria(3);
-        // Valor base (200) + ar (50) + hidro (80) + taxa berço (30) = 360
-        assertEquals(360.0, valor, "Valor com berço deve incluir taxa de 30");
+        // Valor base (200) + ar (50) + hidro (80) + adicional CASAL (20) + taxa berço (30) = 380
+        assertEquals(380.0, valor, "Valor com berço deve incluir adicional de conforto e taxa de berço");
     }
 
     @Test
@@ -82,8 +82,8 @@ class QuartoCasalTest {
     void testCalcularValorDiariaSemTaxaBerco() {
         QuartoCasal quartoComBerco = new QuartoCasal(200.0, true, true, true);
         double valor = quartoComBerco.calcularValorDiaria(2);
-        // Valor base (200) + ar (50) + hidro (80) = 330 (sem taxa de berço)
-        assertEquals(330.0, valor, "Valor para 2 hóspedes não deve incluir taxa de berço");
+        // Valor base (200) + ar (50) + hidro (80) + adicional CASAL (20) = 350
+        assertEquals(350.0, valor, "Valor para 2 hóspedes não deve incluir taxa de berço");
     }
 
     @Test
@@ -93,5 +93,32 @@ class QuartoCasalTest {
         quarto.setTemBerco(true);
         assertTrue(quarto.isTemBerco(), "Deve ter berço após setTemBerco(true)");
         assertEquals(3, quarto.getCapacidadeMaxima(), "Capacidade deve ser 3 com berço");
+    }
+
+    @Test
+    @DisplayName("Deve calcular diária com cama Queen incluindo adicional de conforto")
+    void testCalcularValorDiariaQueenSemBerco() {
+        QuartoCasal quartoQueen = new QuartoCasal(200.0, false, false, false, TipoCama.QUEEN);
+        double valor = quartoQueen.calcularValorDiaria(2);
+        // Valor base (200) + adicional QUEEN (50) = 250
+        assertEquals(250.0, valor, "Valor Queen sem ar/hidro deve ser 250");
+    }
+
+    @Test
+    @DisplayName("Deve calcular diária com cama King incluindo adicional de conforto")
+    void testCalcularValorDiariaKingSemBerco() {
+        QuartoCasal quartoKing = new QuartoCasal(200.0, false, false, false, TipoCama.KING);
+        double valor = quartoKing.calcularValorDiaria(2);
+        // Valor base (200) + adicional KING (80) = 280
+        assertEquals(280.0, valor, "Valor King sem ar/hidro deve ser 280");
+    }
+
+    @Test
+    @DisplayName("Deve calcular diária King com berço e 3 hóspedes")
+    void testCalcularValorDiariaKingComBerco() {
+        QuartoCasal quartoKing = new QuartoCasal(200.0, true, true, true, TipoCama.KING);
+        double valor = quartoKing.calcularValorDiaria(3);
+        // Valor base (200) + ar (50) + hidro (80) + adicional KING (80) + taxa berço (30) = 440
+        assertEquals(440.0, valor, "Valor King com ar, hidro e berço deve ser 440");
     }
 }

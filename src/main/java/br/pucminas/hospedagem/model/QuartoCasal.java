@@ -6,7 +6,12 @@ import jakarta.persistence.*;
 @DiscriminatorValue("CASAL")
 public class QuartoCasal extends Quarto {
 
-    private boolean temBerco = false; // Indica se o quarto possui berço
+    private static final double TAXA_BERCO = 30.0;
+
+    private boolean temBerco = false;
+
+    @Enumerated(EnumType.STRING)
+    private TipoCama tipoCama = TipoCama.CASAL;
 
     public QuartoCasal() {
         super();
@@ -21,15 +26,21 @@ public class QuartoCasal extends Quarto {
         this.temBerco = temBerco;
     }
 
+    public QuartoCasal(double valorBase, boolean possuiAr, boolean possuiHidro, boolean temBerco, TipoCama tipoCama) {
+        super(null, valorBase, possuiAr, possuiHidro);
+        this.temBerco = temBerco;
+        this.tipoCama = tipoCama;
+    }
+
     @Override
     public double calcularValorDiaria(int qtdHospedes) {
         double valor = getValorBase()
                 + (isPossuiAr() ? 50.0 : 0)
-                + (isPossuiHidro() ? 80.0 : 0);
+                + (isPossuiHidro() ? 80.0 : 0)
+                + tipoCama.getAdicionalConforto();
 
-        // Adiciona taxa extra se tiver berço e mais de 2 hóspedes
         if (temBerco && qtdHospedes > 2) {
-            valor += 30.0; // Taxa adicional por berço
+            valor += TAXA_BERCO;
         }
 
         return valor;
@@ -37,16 +48,12 @@ public class QuartoCasal extends Quarto {
 
     @Override
     public int getCapacidadeMaxima() {
-        // Quarto de casal: 2 pessoas + 1 bebê (com berço) = 3 no máximo
         return temBerco ? 3 : 2;
     }
 
-    public boolean isTemBerco() {
-        return temBerco;
-    }
-
-    public void setTemBerco(boolean temBerco) {
-        this.temBerco = temBerco;
-    }
+    public boolean isTemBerco() { return temBerco; }
+    public void setTemBerco(boolean temBerco) { this.temBerco = temBerco; }
+    public TipoCama getTipoCama() { return tipoCama; }
+    public void setTipoCama(TipoCama tipoCama) { this.tipoCama = tipoCama; }
 }
 
