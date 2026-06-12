@@ -83,4 +83,37 @@ class QuartoIndividualTest {
         assertThrows(RecursoNaoPermitidoException.class, () -> quarto.validarBerco(),
                 "Quarto individual não deve permitir berço");
     }
+
+    @Test
+    @DisplayName("Deve calcular diária com múltiplas camas incluindo adicional")
+    void testCalcularValorDiariaMultiplasCamas() {
+        QuartoIndividual quartoTresCamas = new QuartoIndividual(100.0, false, false, 3);
+        double valor = quartoTresCamas.calcularValorDiaria(3);
+        // Valor base (100) + sem ar (0) + sem hidro (0) + 2 camas adicionais * 30 = 160
+        assertEquals(160.0, valor, "Valor com 3 camas deve ser 160 (100 + 60 de adicional)");
+    }
+
+    @Test
+    @DisplayName("Capacidade máxima deve ser proporcional à quantidade de camas")
+    void testCapacidadeMaximaMultiplasCamas() {
+        QuartoIndividual quartoQuatroCamas = new QuartoIndividual(100.0, false, false, 4);
+        assertEquals(4, quartoQuatroCamas.getCapacidadeMaxima(), "Capacidade deve ser igual à qtd de camas");
+    }
+
+    @Test
+    @DisplayName("Deve aceitar hóspedes até o limite de camas")
+    void testValidarCapacidadeMultiplasCamas() {
+        QuartoIndividual quartoDuasCamas = new QuartoIndividual(100.0, false, false, 2);
+        assertDoesNotThrow(() -> quartoDuasCamas.validarCapacidade(2), "Deve aceitar 2 hóspedes com 2 camas");
+        assertThrows(CapacidadeExcedidaException.class, () -> quartoDuasCamas.validarCapacidade(3),
+                "Deve lançar exceção para 3 hóspedes com 2 camas");
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao criar quarto com zero camas")
+    void testCriarQuartoComZeroCamas() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new QuartoIndividual(100.0, false, false, 0),
+                "Deve lançar exceção para 0 camas");
+    }
 }
