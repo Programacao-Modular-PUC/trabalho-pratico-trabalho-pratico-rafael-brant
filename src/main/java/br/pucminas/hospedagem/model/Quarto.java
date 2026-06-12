@@ -1,5 +1,6 @@
 package br.pucminas.hospedagem.model;
 
+import br.pucminas.hospedagem.exception.CapacidadeExcedidaException;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -24,8 +25,27 @@ public abstract class Quarto {
         this.possuiHidro = possuiHidro;
     }
 
+    //Calcula o valor da diária para o quarto baseado no tipo e quantidade de hóspedes
+
     public abstract double calcularValorDiaria(int qtdHospedes);
 
+    //Retorna a capacidade máxima de hóspedes permitida neste quarto
+    public abstract int getCapacidadeMaxima();
+
+    //Valida se a quantidade de hóspedes está dentro da capacidade máxima.
+    public void validarCapacidade(int qtdHospedes) {
+        if (qtdHospedes > getCapacidadeMaxima()) {
+            throw new CapacidadeExcedidaException(
+                    "Capacidade excedida. Máximo de hóspedes: " + getCapacidadeMaxima() +
+                    ". Solicitado: " + qtdHospedes
+            );
+        }
+        if (qtdHospedes <= 0) {
+            throw new CapacidadeExcedidaException("Quantidade de hóspedes deve ser maior que zero.");
+        }
+    }
+
+    // Verifica a disponibilidade do quarto para as datas informadas
     public boolean estaDisponivel(LocalDateTime inicio, LocalDateTime fim) {
         return true;
     }

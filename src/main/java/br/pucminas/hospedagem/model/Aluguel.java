@@ -1,7 +1,9 @@
 package br.pucminas.hospedagem.model;
 
+import br.pucminas.hospedagem.exception.DataInvalidaException;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 public class Aluguel {
@@ -39,16 +41,46 @@ public class Aluguel {
         this.cliente = cliente;
     }
 
+    //Calcula o número de diárias (noites) entre a entrada e saída
     public int calcularDiarias() {
-        return 0;
+        validarDatas();
+        return (int) ChronoUnit.DAYS.between(dataHoraEntrada, dataHoraSaida);
     }
 
+    //Calcula o valor final da hospedagem
     public double calcularValorFinal() {
-        return 0.0;
+        if (quarto == null) {
+            throw new IllegalStateException("Quarto não pode ser nulo.");
+        }
+        int diarias = calcularDiarias();
+        double valorDiaria = quarto.calcularValorDiaria(qtdHospedes);
+        return diarias * valorDiaria;
+    }
+
+    // Valida as datas de entrada e saída
+    public void validarDatas() {
+        if (dataHoraEntrada == null || dataHoraSaida == null) {
+            throw new DataInvalidaException("Datas de entrada e saída não podem ser nulas.");
+        }
+
+        if (dataHoraEntrada.isAfter(dataHoraSaida)) {
+            throw new DataInvalidaException(
+                    "Data de entrada (" + dataHoraEntrada + ") não pode ser após a data de saída (" +
+                    dataHoraSaida + ")."
+            );
+        }
+
+        if (dataHoraEntrada.equals(dataHoraSaida)) {
+            throw new DataInvalidaException("Data de entrada e saída não podem ser iguais.");
+        }
+
+        if (dataHoraEntrada.isBefore(LocalDateTime.now())) {
+            throw new DataInvalidaException("Data de entrada não pode ser no passado.");
+        }
     }
 
     public String imprimirRecibo() {
-        return "";
+        return "Recibo de hospedagem - Aluguel ID: " + id;
     }
 
     public Long getId() { return id; }
