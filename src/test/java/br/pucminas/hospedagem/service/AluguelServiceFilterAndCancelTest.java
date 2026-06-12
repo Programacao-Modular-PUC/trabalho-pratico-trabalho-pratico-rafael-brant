@@ -1,8 +1,12 @@
 package br.pucminas.hospedagem.service;
 
+import br.pucminas.hospedagem.exception.DataInvalidaException;
+import br.pucminas.hospedagem.exception.QuartoIndisponivelException;
 import br.pucminas.hospedagem.model.Aluguel;
 import br.pucminas.hospedagem.model.Cliente;
+import br.pucminas.hospedagem.model.Quarto;
 import br.pucminas.hospedagem.model.QuartoCasal;
+import br.pucminas.hospedagem.model.QuartoIndividual;
 import br.pucminas.hospedagem.model.StatusAluguel;
 import br.pucminas.hospedagem.repository.AluguelRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,5 +78,54 @@ class AluguelServiceFilterAndCancelTest {
 
         assertEquals(1, historico.size());
         assertEquals(aluguel, historico.get(0));
+    }
+
+    @Test
+    @DisplayName("Deve lançar DataInvalidaException quando a data de entrada for após a data de saída")
+    void testSalvarAluguelDataInvalida() {
+        Aluguel aluguelDataInvalida = new Aluguel(
+                LocalDateTime.now().plusDays(5),
+                LocalDateTime.now().plusDays(2),
+                2,
+                StatusAluguel.ATIVO,
+                quartoCasal,
+                cliente
+        );
+
+        assertThrows(DataInvalidaException.class, () -> service.salvar(aluguelDataInvalida),
+                "Deve lançar DataInvalidaException quando data de entrada for após data de saída");
+    }
+
+    @Test
+    @DisplayName("Deve lançar QuartoIndisponivelException quando o quarto não estiver disponível")
+    void testSalvarAluguelQuartoIndisponivel() {
+        Quarto quartoIndisponivel = new QuartoIndividual(100.0, true, true) {
+            @Override
+            public boolean estaDisponivel(LocalDateTime inicio, LocalDateTime fim) {
+                return false;
+            }
+
+            @Override
+            public double calcularValorDiaria(int qtdHospedes) {
+                return 0;
+            }
+
+            @Override
+            public int getCapacidadeMaxima() {
+                return 1;
+            }
+        };
+
+        Aluguel aluguelIndisponivel = new Aluguel(
+                LocalDateTime.now().plusDays(2),
+                LocalDateTime.now().plusDays(5),
+                1,
+                StatusAluguel.ATIVO,
+                quartoIndisponivel,
+                cliente
+        );
+
+        assertThrows(QuartoIndisponivelException.class, () -> service.salvar(aluguelIndisponivel),
+                "Deve lançar QuartoIndisponivelException quando o quarto não estiver disponível");
     }
 }
