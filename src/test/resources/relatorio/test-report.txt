@@ -1,0 +1,8 @@
+Relatório de Testes - 2026-06-12 11:21:55
+===================================================
+Total de testes executados: 0
+Sucesso: 0
+Falha: 0
+Abortado: 0
+Ignorado: 0
+
