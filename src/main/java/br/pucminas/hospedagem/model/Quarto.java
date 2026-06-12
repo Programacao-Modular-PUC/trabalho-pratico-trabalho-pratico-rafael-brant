@@ -16,6 +16,9 @@ public abstract class Quarto {
     private boolean possuiAr;
     private boolean possuiHidro;
 
+    @Column(name = "tipo_quarto", insertable = false, updatable = false)
+    private String tipoQuarto;
+
     protected Quarto() {}
 
     public Quarto(Long id, double valorBase, boolean possuiAr, boolean possuiHidro) {
@@ -49,6 +52,8 @@ public abstract class Quarto {
     public boolean estaDisponivel(LocalDateTime inicio, LocalDateTime fim) {
         return true;
     }
+
+    public String getTipoQuarto() { return tipoQuarto; }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
