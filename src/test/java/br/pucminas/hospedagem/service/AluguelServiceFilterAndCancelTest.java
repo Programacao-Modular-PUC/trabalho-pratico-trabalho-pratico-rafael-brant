@@ -1,0 +1,78 @@
+package br.pucminas.hospedagem.service;
+
+import br.pucminas.hospedagem.model.Aluguel;
+import br.pucminas.hospedagem.model.Cliente;
+import br.pucminas.hospedagem.model.QuartoCasal;
+import br.pucminas.hospedagem.model.StatusAluguel;
+import br.pucminas.hospedagem.repository.AluguelRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Testes de filtro e cancelamento de aluguel")
+class AluguelServiceFilterAndCancelTest {
+
+    @Mock
+    private AluguelRepository repository;
+
+    @InjectMocks
+    private AluguelService service;
+
+    private QuartoCasal quartoCasal;
+    private Cliente cliente;
+    private Aluguel aluguel;
+
+    @BeforeEach
+    void setUp() {
+        quartoCasal = new QuartoCasal(200.0, true, true, false);
+        cliente = new Cliente("Ana", "111.222.333-44", "Rua X", "31999999999", "ana@email.com");
+        aluguel = new Aluguel(LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(5), 2,
+                StatusAluguel.ATIVO, quartoCasal, cliente);
+    }
+
+    @Test
+    @DisplayName("Deve filtrar alugueis por tipo de quarto")
+    void testFiltrarPorTipoQuarto() {
+        when(repository.findByQuartoTipoQuarto("CASAL")).thenReturn(List.of(aluguel));
+
+        List<Aluguel> resultado = service.filtrarPorTipoQuarto("CASAL");
+
+        assertEquals(1, resultado.size());
+        assertEquals(aluguel, resultado.get(0));
+    }
+
+    @Test
+    @DisplayName("Deve cancelar aluguel existente")
+    void testCancelarAluguel() {
+        when(repository.findById(1L)).thenReturn(Optional.of(aluguel));
+        when(repository.save(aluguel)).thenReturn(aluguel);
+
+        Optional<Aluguel> resultado = service.cancelarAluguel(1L);
+
+        assertTrue(resultado.isPresent());
+        assertEquals(StatusAluguel.CANCELADO, resultado.get().getStatus());
+    }
+
+    @Test
+    @DisplayName("Deve listar histórico de aluguéis por cliente")
+    void testListarPorCliente() {
+        when(repository.findByClienteId(1L)).thenReturn(List.of(aluguel));
+
+        List<Aluguel> historico = service.listarPorCliente(1L);
+
+        assertEquals(1, historico.size());
+        assertEquals(aluguel, historico.get(0));
+    }
+}
