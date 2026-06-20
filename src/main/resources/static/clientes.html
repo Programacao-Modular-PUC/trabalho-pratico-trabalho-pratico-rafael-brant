@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes | Hospedagem Maraú</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg navbar-beach">
+    <div class="container">
+        <a class="navbar-brand" href="/index.html">
+            <span class="brand-icon"><i class="bi bi-water"></i></span>
+            Hospedagem Maraú
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/index.html">Início</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/clientes.html">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/quartos.html">Quartos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/alugueis.html">Aluguéis</a></li>
+                <li class="nav-item"><a class="nav-link" href="/residencias.html">Residências</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1" style="--bs-breadcrumb-divider:'›'">
+                <li class="breadcrumb-item"><a href="/index.html" style="color:rgba(255,255,255,.55);text-decoration:none">Início</a></li>
+                <li class="breadcrumb-item active" style="color:var(--teal)">Clientes</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-0"><i class="bi bi-people-fill me-2" style="color:var(--teal)"></i>Clientes</h2>
+                <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:.88rem">Gerencie os hóspedes cadastrados</p>
+            </div>
+            <button class="btn btn-teal" onclick="abrirModalNovo()">
+                <i class="bi bi-person-plus-fill me-1"></i>Novo Cliente
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <!-- BUSCA -->
+    <div class="filter-bar d-flex align-items-center gap-3">
+        <i class="bi bi-search text-muted"></i>
+        <input type="search" id="busca" class="form-control border-0 shadow-none ps-0"
+               placeholder="Buscar por nome ou CPF..." oninput="filtrarTabela()"
+               style="background:transparent">
+    </div>
+
+    <div id="alerta" class="alert d-none rounded-3 mb-3" role="alert"></div>
+
+    <!-- TABELA -->
+    <div class="card-beach">
+        <div class="table-responsive">
+            <table class="table table-beach align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Telefone</th>
+                        <th>E-mail</th>
+                        <th>Endereço</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-body">
+                    <tr><td colspan="7" class="text-center py-5" style="color:#A0B4C0">
+                        <i class="bi bi-hourglass-split fs-4 d-block mb-2"></i>Carregando...
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo/Editar Cliente -->
+<div class="modal fade" id="modalCliente" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-titulo">Novo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-alerta" class="alert alert-danger d-none rounded-3"></div>
+                <input type="hidden" id="cliente-id">
+                <div class="mb-3">
+                    <label class="form-label">Nome <span class="text-danger">*</span></label>
+                    <input type="text" id="f-nome" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">CPF <span class="text-danger">*</span></label>
+                    <input type="text" id="f-cpf" class="form-control" placeholder="000.000.000-00">
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="form-label">Telefone</label>
+                        <input type="text" id="f-telefone" class="form-control" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" id="f-email" class="form-control">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Endereço</label>
+                    <input type="text" id="f-endereco" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-teal" onclick="salvarCliente()">
+                    <i class="bi bi-check-lg me-1"></i>Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmação de Exclusão -->
+<div class="modal fade" id="modalExcluir" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#B03A2E">
+                <h5 class="modal-title">Confirmar exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Deseja excluir o cliente <strong id="nome-excluir"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExclusao()">
+                    <i class="bi bi-trash me-1"></i>Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-beach">
+    <i class="bi bi-water me-1"></i> Hospedagem Maraú · Península de Maraú, BA
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let clientes = [];
+let idParaExcluir = null;
+const modalCliente = new bootstrap.Modal(document.getElementById('modalCliente'));
+const modalExcluir = new bootstrap.Modal(document.getElementById('modalExcluir'));
+
+async function carregarClientes() {
+    try {
+        const res = await fetch('/clientes');
+        clientes = await res.json();
+        renderizar(clientes);
+    } catch {
+        mostrarAlerta('Erro ao carregar clientes.', 'danger');
+    }
+}
+
+function renderizar(lista) {
+    const tbody = document.getElementById('tabela-body');
+    if (!lista.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-5" style="color:#A0B4C0"><i class="bi bi-people fs-3 d-block mb-2"></i>Nenhum cliente cadastrado.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = lista.map(c => `
+        <tr>
+            <td><span class="badge badge-ocean rounded-2">${c.id}</span></td>
+            <td class="fw-600">${c.nome || '—'}</td>
+            <td style="font-size:.85rem;color:#5A7282">${c.cpf || '—'}</td>
+            <td style="font-size:.85rem">${c.telefone || '—'}</td>
+            <td style="font-size:.85rem">${c.email || '—'}</td>
+            <td style="font-size:.85rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.endereco || '—'}</td>
+            <td class="text-center text-nowrap">
+                <a href="/alugueis.html?clienteId=${c.id}" class="btn btn-sm btn-outline-teal me-1" title="Ver histórico">
+                    <i class="bi bi-calendar2-week"></i>
+                </a>
+                <button class="btn btn-sm btn-outline-ocean me-1" onclick="editarCliente(${c.id})" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="pedirExclusao(${c.id}, '${escHtml(c.nome)}')" title="Excluir">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filtrarTabela() {
+    const q = document.getElementById('busca').value.toLowerCase();
+    renderizar(clientes.filter(c =>
+        (c.nome || '').toLowerCase().includes(q) ||
+        (c.cpf || '').toLowerCase().includes(q)
+    ));
+}
+
+function abrirModalNovo() {
+    document.getElementById('modal-titulo').textContent = 'Novo Cliente';
+    document.getElementById('cliente-id').value = '';
+    ['nome','cpf','telefone','email','endereco'].forEach(f => document.getElementById('f-'+f).value = '');
+    document.getElementById('modal-alerta').classList.add('d-none');
+    modalCliente.show();
+}
+
+function editarCliente(id) {
+    const c = clientes.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('modal-titulo').textContent = 'Editar Cliente';
+    document.getElementById('cliente-id').value = c.id;
+    document.getElementById('f-nome').value = c.nome || '';
+    document.getElementById('f-cpf').value = c.cpf || '';
+    document.getElementById('f-telefone').value = c.telefone || '';
+    document.getElementById('f-email').value = c.email || '';
+    document.getElementById('f-endereco').value = c.endereco || '';
+    document.getElementById('modal-alerta').classList.add('d-none');
+    modalCliente.show();
+}
+
+async function salvarCliente() {
+    const id = document.getElementById('cliente-id').value;
+    const payload = {
+        nome: document.getElementById('f-nome').value.trim(),
+        cpf: document.getElementById('f-cpf').value.trim(),
+        telefone: document.getElementById('f-telefone').value.trim(),
+        email: document.getElementById('f-email').value.trim(),
+        endereco: document.getElementById('f-endereco').value.trim()
+    };
+
+    if (!payload.nome) {
+        mostrarAlertaModal('Nome é obrigatório.');
+        return;
+    }
+
+    try {
+        const res = await fetch(id ? `/clientes/${id}` : '/clientes', {
+            method: id ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            mostrarAlertaModal(err.erro || 'Erro ao salvar cliente.');
+            return;
+        }
+        modalCliente.hide();
+        await carregarClientes();
+        mostrarAlerta(id ? 'Cliente atualizado.' : 'Cliente cadastrado.', 'success');
+    } catch {
+        mostrarAlertaModal('Erro de conexão.');
+    }
+}
+
+function pedirExclusao(id, nome) {
+    idParaExcluir = id;
+    document.getElementById('nome-excluir').textContent = nome;
+    modalExcluir.show();
+}
+
+async function confirmarExclusao() {
+    if (!idParaExcluir) return;
+    try {
+        await fetch(`/clientes/${idParaExcluir}`, { method: 'DELETE' });
+        modalExcluir.hide();
+        await carregarClientes();
+        mostrarAlerta('Cliente excluído.', 'success');
+    } catch {
+        mostrarAlerta('Erro ao excluir cliente.', 'danger');
+    }
+}
+
+function mostrarAlerta(msg, tipo) {
+    const el = document.getElementById('alerta');
+    el.className = tipo === 'success'
+        ? 'alert alert-beach-success rounded-3'
+        : 'alert alert-beach-danger rounded-3';
+    el.innerHTML = `<i class="bi bi-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-2"></i>${msg}`;
+    el.classList.remove('d-none');
+    setTimeout(() => el.classList.add('d-none'), 4000);
+}
+
+function mostrarAlertaModal(msg) {
+    const el = document.getElementById('modal-alerta');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+}
+
+function escHtml(s) { return (s || '').replace(/'/g, "\\'"); }
+
+carregarClientes();
+</script>
+</body>
+</html>

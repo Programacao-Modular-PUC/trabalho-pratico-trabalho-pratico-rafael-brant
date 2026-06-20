@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residências | Hospedagem Maraú</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg navbar-beach">
+    <div class="container">
+        <a class="navbar-brand" href="/index.html">
+            <span class="brand-icon"><i class="bi bi-water"></i></span>
+            Hospedagem Maraú
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/index.html">Início</a></li>
+                <li class="nav-item"><a class="nav-link" href="/clientes.html">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/quartos.html">Quartos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/alugueis.html">Aluguéis</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/residencias.html">Residências</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1" style="--bs-breadcrumb-divider:'›'">
+                <li class="breadcrumb-item"><a href="/index.html" style="color:rgba(255,255,255,.55);text-decoration:none">Início</a></li>
+                <li class="breadcrumb-item active" style="color:var(--teal)">Residências</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-0"><i class="bi bi-building-fill me-2" style="color:var(--teal)"></i>Residências</h2>
+                <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:.88rem">Propriedades cadastradas em Maraú</p>
+            </div>
+            <button class="btn btn-teal" onclick="abrirModalNovo()">
+                <i class="bi bi-building-fill-add me-1"></i>Nova Residência
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <div id="alerta" class="alert d-none rounded-3 mb-3" role="alert"></div>
+
+    <!-- TABELA -->
+    <div class="card-beach">
+        <div class="table-responsive">
+            <table class="table table-beach align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Endereço</th>
+                        <th>Número</th>
+                        <th>Bairro</th>
+                        <th>CEP</th>
+                        <th>Telefone</th>
+                        <th>E-mail</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-body">
+                    <tr><td colspan="8" class="text-center py-5" style="color:#A0B4C0">
+                        <i class="bi bi-hourglass-split fs-4 d-block mb-2"></i>Carregando...
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nova/Editar Residência -->
+<div class="modal fade" id="modalResidencia" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-titulo">Nova Residência</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-alerta" class="alert alert-danger d-none rounded-3"></div>
+                <input type="hidden" id="residencia-id">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Endereço <span class="text-danger">*</span></label>
+                        <input type="text" id="f-endereco" class="form-control" placeholder="Rua, Avenida...">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Número</label>
+                        <input type="text" id="f-numero" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Bairro</label>
+                        <input type="text" id="f-bairro" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">CEP</label>
+                        <input type="text" id="f-cep" class="form-control" placeholder="00000-000">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Telefone</label>
+                        <input type="text" id="f-telefone" class="form-control" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" id="f-email" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-teal" onclick="salvarResidencia()">
+                    <i class="bi bi-check-lg me-1"></i>Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Excluir -->
+<div class="modal fade" id="modalExcluir" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#B03A2E">
+                <h5 class="modal-title">Excluir Residência</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Excluir a residência <strong id="id-excluir"></strong>?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExclusao()">
+                    <i class="bi bi-trash me-1"></i>Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-beach">
+    <i class="bi bi-water me-1"></i> Hospedagem Maraú · Península de Maraú, BA
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let residencias = [];
+let idParaExcluir = null;
+const modalResidencia = new bootstrap.Modal(document.getElementById('modalResidencia'));
+const modalExcluir    = new bootstrap.Modal(document.getElementById('modalExcluir'));
+
+const CAMPOS = ['endereco','numero','bairro','cep','telefone','email'];
+
+async function carregarResidencias() {
+    try {
+        residencias = await fetch('/residencias').then(r => r.json());
+        renderizar();
+    } catch {
+        mostrarAlerta('Erro ao carregar residências.', 'danger');
+    }
+}
+
+function renderizar() {
+    const tbody = document.getElementById('tabela-body');
+    if (!residencias.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5" style="color:#A0B4C0"><i class="bi bi-building fs-3 d-block mb-2"></i>Nenhuma residência cadastrada.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = residencias.map(r => `
+        <tr>
+            <td><span class="badge badge-ocean rounded-2">${r.id}</span></td>
+            <td class="fw-600">${r.endereco || '—'}</td>
+            <td>${r.numero || '—'}</td>
+            <td>${r.bairro || '—'}</td>
+            <td style="font-size:.85rem;color:#5A7282">${r.cep || '—'}</td>
+            <td style="font-size:.85rem">${r.telefone || '—'}</td>
+            <td style="font-size:.85rem">${r.email || '—'}</td>
+            <td class="text-center text-nowrap">
+                <button class="btn btn-sm btn-outline-ocean me-1" onclick="editarResidencia(${r.id})" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="pedirExclusao(${r.id})" title="Excluir">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function abrirModalNovo() {
+    document.getElementById('modal-titulo').textContent = 'Nova Residência';
+    document.getElementById('residencia-id').value = '';
+    CAMPOS.forEach(f => document.getElementById('f-'+f).value = '');
+    document.getElementById('modal-alerta').classList.add('d-none');
+    modalResidencia.show();
+}
+
+function editarResidencia(id) {
+    const r = residencias.find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('modal-titulo').textContent = 'Editar Residência';
+    document.getElementById('residencia-id').value = r.id;
+    CAMPOS.forEach(f => document.getElementById('f-'+f).value = r[f] || '');
+    document.getElementById('modal-alerta').classList.add('d-none');
+    modalResidencia.show();
+}
+
+async function salvarResidencia() {
+    const id = document.getElementById('residencia-id').value;
+    const payload = {};
+    CAMPOS.forEach(f => payload[f] = document.getElementById('f-'+f).value.trim());
+
+    if (!payload.endereco) { mostrarAlertaModal('Endereço é obrigatório.'); return; }
+
+    try {
+        const res = await fetch(id ? `/residencias/${id}` : '/residencias', {
+            method: id ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            mostrarAlertaModal(err.erro || 'Erro ao salvar residência.');
+            return;
+        }
+        modalResidencia.hide();
+        await carregarResidencias();
+        mostrarAlerta(id ? 'Residência atualizada.' : 'Residência cadastrada.', 'success');
+    } catch {
+        mostrarAlertaModal('Erro de conexão.');
+    }
+}
+
+function pedirExclusao(id) {
+    idParaExcluir = id;
+    document.getElementById('id-excluir').textContent = `#${id}`;
+    modalExcluir.show();
+}
+
+async function confirmarExclusao() {
+    try {
+        await fetch(`/residencias/${idParaExcluir}`, { method: 'DELETE' });
+        modalExcluir.hide();
+        await carregarResidencias();
+        mostrarAlerta('Residência excluída.', 'success');
+    } catch {
+        mostrarAlerta('Erro ao excluir.', 'danger');
+    }
+}
+
+function mostrarAlerta(msg, tipo) {
+    const el = document.getElementById('alerta');
+    el.className = tipo === 'success'
+        ? 'alert alert-beach-success rounded-3'
+        : 'alert alert-beach-danger rounded-3';
+    el.innerHTML = `<i class="bi bi-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-2"></i>${msg}`;
+    el.classList.remove('d-none');
+    setTimeout(() => el.classList.add('d-none'), 4000);
+}
+
+function mostrarAlertaModal(msg) {
+    const el = document.getElementById('modal-alerta');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+}
+
+carregarResidencias();
+</script>
+</body>
+</html>

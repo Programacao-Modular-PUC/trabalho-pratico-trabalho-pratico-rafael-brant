@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aluguéis | Hospedagem Maraú</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg navbar-beach">
+    <div class="container">
+        <a class="navbar-brand" href="/index.html">
+            <span class="brand-icon"><i class="bi bi-water"></i></span>
+            Hospedagem Maraú
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/index.html">Início</a></li>
+                <li class="nav-item"><a class="nav-link" href="/clientes.html">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/quartos.html">Quartos</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/alugueis.html">Aluguéis</a></li>
+                <li class="nav-item"><a class="nav-link" href="/residencias.html">Residências</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1" style="--bs-breadcrumb-divider:'›'">
+                <li class="breadcrumb-item"><a href="/index.html" style="color:rgba(255,255,255,.55);text-decoration:none">Início</a></li>
+                <li class="breadcrumb-item active" style="color:var(--teal)">Aluguéis</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-0"><i class="bi bi-calendar-check-fill me-2" style="color:var(--teal)"></i>Aluguéis</h2>
+                <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:.88rem">Gerencie reservas e hospedagens</p>
+            </div>
+            <button class="btn btn-teal" onclick="abrirModalNovo()">
+                <i class="bi bi-calendar-plus-fill me-1"></i>Novo Aluguel
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <!-- FILTROS -->
+    <div class="filter-bar mb-4">
+        <div class="row g-2 align-items-end">
+            <div class="col-sm-3">
+                <label class="form-label">Tipo de quarto</label>
+                <select id="filtro-tipo" class="form-select form-select-sm">
+                    <option value="">Todos os tipos</option>
+                    <option value="INDIVIDUAL">Individual</option>
+                    <option value="CASAL">Casal</option>
+                    <option value="FAMILIA">Família</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Cliente (ID ou nome)</label>
+                <input type="text" id="filtro-cliente" class="form-control form-control-sm" placeholder="ID ou nome">
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Status</label>
+                <select id="filtro-status" class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    <option value="ATIVO">Ativo</option>
+                    <option value="CONCLUIDO">Concluído</option>
+                    <option value="CANCELADO">Cancelado</option>
+                </select>
+            </div>
+            <div class="col-sm-3 d-flex gap-2">
+                <button class="btn btn-sm btn-teal" onclick="aplicarFiltros()">
+                    <i class="bi bi-funnel-fill me-1"></i>Filtrar
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="limparFiltros()">Limpar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alerta" class="alert d-none rounded-3 mb-3" role="alert"></div>
+
+    <!-- TABELA -->
+    <div class="card-beach">
+        <div class="table-responsive">
+            <table class="table table-beach align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cliente</th>
+                        <th>Quarto</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Hóspedes</th>
+                        <th>Diárias</th>
+                        <th>Valor Total</th>
+                        <th>Status</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-body">
+                    <tr><td colspan="10" class="text-center py-5" style="color:#A0B4C0">
+                        <i class="bi bi-hourglass-split fs-4 d-block mb-2"></i>Carregando...
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo Aluguel -->
+<div class="modal fade" id="modalAluguel" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-calendar-plus me-2"></i>Novo Aluguel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-alerta" class="alert alert-danger d-none rounded-3"></div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Cliente <span class="text-danger">*</span></label>
+                        <select id="f-clienteId" class="form-select">
+                            <option value="">Selecione um cliente...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Quarto <span class="text-danger">*</span></label>
+                        <select id="f-quartoId" class="form-select">
+                            <option value="">Selecione um quarto...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Data/Hora de Entrada <span class="text-danger">*</span></label>
+                        <input type="datetime-local" id="f-entrada" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Data/Hora de Saída <span class="text-danger">*</span></label>
+                        <input type="datetime-local" id="f-saida" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nº de Hóspedes <span class="text-danger">*</span></label>
+                        <input type="number" id="f-qtdHospedes" class="form-control" min="1" value="1">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Status inicial</label>
+                        <select id="f-status" class="form-select">
+                            <option value="ATIVO">Ativo</option>
+                            <option value="CONCLUIDO">Concluído</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Residência</label>
+                        <select id="f-residenciaId" class="form-select">
+                            <option value="">Opcional...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3 p-3 rounded-3" style="background:var(--teal-light);border-left:4px solid var(--teal);font-size:.85rem;color:#0A6B60">
+                    <i class="bi bi-info-circle-fill me-1"></i>
+                    O valor total é calculado automaticamente. Saída após 12h conta como diária extra.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-teal" onclick="salvarAluguel()">
+                    <i class="bi bi-check-lg me-1"></i>Confirmar Aluguel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Recibo -->
+<div class="modal fade" id="modalRecibo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-receipt me-2"></i>Recibo de Hospedagem</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="recibo-conteudo" class="recibo-box"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-ocean" onclick="imprimirRecibo()">
+                    <i class="bi bi-printer me-1"></i>Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cancelar -->
+<div class="modal fade" id="modalCancelar" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#9A3B22">
+                <h5 class="modal-title">Cancelar Aluguel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Deseja cancelar o aluguel <strong id="id-cancelar"></strong>?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarCancelamento()">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar Aluguel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Excluir -->
+<div class="modal fade" id="modalExcluir" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#B03A2E">
+                <h5 class="modal-title">Excluir Aluguel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Excluir permanentemente o aluguel <strong id="id-excluir"></strong>?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExclusao()">
+                    <i class="bi bi-trash me-1"></i>Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-beach">
+    <i class="bi bi-water me-1"></i> Hospedagem Maraú · Península de Maraú, BA
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let alugueis = [];
+let idParaCancelar = null;
+let idParaExcluir = null;
+const modalAluguel  = new bootstrap.Modal(document.getElementById('modalAluguel'));
+const modalRecibo   = new bootstrap.Modal(document.getElementById('modalRecibo'));
+const modalCancelar = new bootstrap.Modal(document.getElementById('modalCancelar'));
+const modalExcluir  = new bootstrap.Modal(document.getElementById('modalExcluir'));
+
+const STATUS_BADGE = {
+    ATIVO:     'badge-teal',
+    CONCLUIDO: 'badge-ocean',
+    CANCELADO: 'badge-coral'
+};
+const TIPO_LABEL = { INDIVIDUAL: 'Individual', CASAL: 'Casal', FAMILIA: 'Família' };
+
+async function carregarAlugueis() {
+    try {
+        const res = await fetch('/alugueis');
+        alugueis = await res.json();
+        renderizar(alugueis);
+    } catch {
+        mostrarAlerta('Erro ao carregar aluguéis.', 'danger');
+    }
+}
+
+function renderizar(lista) {
+    const tbody = document.getElementById('tabela-body');
+    if (!lista.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5" style="color:#A0B4C0"><i class="bi bi-calendar-x fs-3 d-block mb-2"></i>Nenhum aluguel encontrado.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = lista.map(a => `
+        <tr>
+            <td><span class="badge badge-ocean rounded-2">${a.id}</span></td>
+            <td>${a.cliente ? `<span class="fw-600" title="ID ${a.cliente.id}">${a.cliente.nome || '—'}</span>` : '—'}</td>
+            <td>${a.quarto ? `<span class="badge badge-teal rounded-2">#${a.quarto.id} ${TIPO_LABEL[a.quarto.tipoQuarto] || ''}</span>` : '—'}</td>
+            <td><small style="color:#4A6572">${formatarData(a.dataHoraEntrada)}</small></td>
+            <td><small style="color:#4A6572">${formatarData(a.dataHoraSaida)}</small></td>
+            <td class="text-center"><span class="badge badge-ocean rounded-2">${a.qtdHospedes}</span></td>
+            <td class="text-center">${a.qtdDiarias || '—'}</td>
+            <td><strong>${a.valorTotal ? a.valorTotal.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}) : '—'}</strong></td>
+            <td><span class="badge ${STATUS_BADGE[a.status] || 'badge-ocean'} rounded-2">${a.status || '—'}</span></td>
+            <td class="text-center text-nowrap">
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="verRecibo(${a.id})" title="Ver recibo">
+                    <i class="bi bi-receipt"></i>
+                </button>
+                ${a.status === 'ATIVO' ? `
+                <button class="btn btn-sm btn-outline-warning me-1" onclick="pedirCancelamento(${a.id})" title="Cancelar">
+                    <i class="bi bi-x-circle"></i>
+                </button>` : ''}
+                <button class="btn btn-sm btn-outline-danger" onclick="pedirExclusao(${a.id})" title="Excluir">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function aplicarFiltros() {
+    const tipo     = document.getElementById('filtro-tipo').value;
+    const clienteQ = document.getElementById('filtro-cliente').value.trim().toLowerCase();
+    const status   = document.getElementById('filtro-status').value;
+
+    let lista = alugueis;
+
+    if (tipo) {
+        try {
+            const res = await fetch(`/alugueis/tipo?tipoQuarto=${tipo}`);
+            lista = await res.json();
+        } catch {
+            mostrarAlerta('Erro ao filtrar por tipo.', 'danger');
+            return;
+        }
+    }
+
+    if (clienteQ) {
+        const numId = parseInt(clienteQ);
+        if (!isNaN(numId)) {
+            lista = lista.filter(a => a.cliente && a.cliente.id === numId);
+        } else {
+            lista = lista.filter(a => a.cliente && (a.cliente.nome || '').toLowerCase().includes(clienteQ));
+        }
+    }
+
+    if (status) lista = lista.filter(a => a.status === status);
+
+    renderizar(lista);
+}
+
+function limparFiltros() {
+    document.getElementById('filtro-tipo').value    = '';
+    document.getElementById('filtro-cliente').value = '';
+    document.getElementById('filtro-status').value  = '';
+    renderizar(alugueis);
+}
+
+async function abrirModalNovo() {
+    document.getElementById('modal-alerta').classList.add('d-none');
+
+    const agora = new Date();
+    agora.setMinutes(agora.getMinutes() + 1);
+    const isoMin = agora.toISOString().slice(0, 16);
+    document.getElementById('f-entrada').min   = isoMin;
+    document.getElementById('f-entrada').value = '';
+    document.getElementById('f-saida').min     = isoMin;
+    document.getElementById('f-saida').value   = '';
+    document.getElementById('f-qtdHospedes').value = 1;
+    document.getElementById('f-status').value  = 'ATIVO';
+
+    await Promise.all([carregarSelectClientes(), carregarSelectQuartos(), carregarSelectResidencias()]);
+    modalAluguel.show();
+}
+
+async function carregarSelectClientes() {
+    try {
+        const clientes = await fetch('/clientes').then(r => r.json());
+        document.getElementById('f-clienteId').innerHTML =
+            '<option value="">Selecione um cliente...</option>' +
+            clientes.map(c => `<option value="${c.id}">${c.nome} — CPF: ${c.cpf || '—'}</option>`).join('');
+    } catch {
+        document.getElementById('f-clienteId').innerHTML = '<option value="">Erro ao carregar clientes</option>';
+    }
+}
+
+async function carregarSelectQuartos() {
+    try {
+        const quartos = await fetch('/quartos').then(r => r.json());
+        document.getElementById('f-quartoId').innerHTML =
+            '<option value="">Selecione um quarto...</option>' +
+            quartos.map(q => `<option value="${q.id}">#${q.id} — ${TIPO_LABEL[q.tipoQuarto] || q.tipoQuarto} (cap. ${q.capacidadeMaxima})</option>`).join('');
+    } catch {
+        document.getElementById('f-quartoId').innerHTML = '<option value="">Erro ao carregar quartos</option>';
+    }
+}
+
+async function carregarSelectResidencias() {
+    try {
+        const residencias = await fetch('/residencias').then(r => r.json());
+        document.getElementById('f-residenciaId').innerHTML =
+            '<option value="">Selecione uma residência (opcional)...</option>' +
+            residencias.map(r => `<option value="${r.id}">#${r.id} — ${r.endereco || ''}, ${r.numero || ''} — ${r.bairro || ''}</option>`).join('');
+    } catch {
+        document.getElementById('f-residenciaId').innerHTML = '<option value="">Erro ao carregar residências</option>';
+    }
+}
+
+async function salvarAluguel() {
+    const clienteId   = parseInt(document.getElementById('f-clienteId').value);
+    const quartoId    = parseInt(document.getElementById('f-quartoId').value);
+    const entrada     = document.getElementById('f-entrada').value;
+    const saida       = document.getElementById('f-saida').value;
+    const qtdHospedes = parseInt(document.getElementById('f-qtdHospedes').value);
+    const status      = document.getElementById('f-status').value;
+
+    if (!clienteId)            { mostrarAlertaModal('Selecione um cliente.');            return; }
+    if (!quartoId)             { mostrarAlertaModal('Selecione um quarto.');             return; }
+    if (!entrada)              { mostrarAlertaModal('Informe a data de entrada.');        return; }
+    if (!saida)                { mostrarAlertaModal('Informe a data de saída.');          return; }
+    if (!qtdHospedes || qtdHospedes < 1) { mostrarAlertaModal('Informe o nº de hóspedes.'); return; }
+
+    const residenciaId = parseInt(document.getElementById('f-residenciaId').value) || null;
+    const payload = { quartoId, clienteId, residenciaId, dataHoraEntrada: entrada + ':00', dataHoraSaida: saida + ':00', qtdHospedes, status };
+
+    try {
+        const res = await fetch('/alugueis', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            mostrarAlertaModal(err.erro || 'Erro ao criar aluguel.');
+            return;
+        }
+        modalAluguel.hide();
+        await carregarAlugueis();
+        mostrarAlerta('Aluguel criado com sucesso.', 'success');
+    } catch {
+        mostrarAlertaModal('Erro de conexão com o servidor.');
+    }
+}
+
+async function verRecibo(id) {
+    try {
+        const res = await fetch(`/alugueis/${id}/recibo`);
+        if (!res.ok) { mostrarAlerta('Erro ao buscar recibo.', 'danger'); return; }
+        const texto = await res.text();
+        document.getElementById('recibo-conteudo').textContent = texto;
+        modalRecibo.show();
+    } catch {
+        mostrarAlerta('Erro de conexão.', 'danger');
+    }
+}
+
+function imprimirRecibo() {
+    const conteudo = document.getElementById('recibo-conteudo').textContent;
+    const janela = window.open('', '_blank');
+    janela.document.write(`<pre style="font-family:monospace;font-size:14px;padding:20px">${conteudo}</pre>`);
+    janela.print();
+}
+
+function pedirCancelamento(id) {
+    idParaCancelar = id;
+    document.getElementById('id-cancelar').textContent = `#${id}`;
+    modalCancelar.show();
+}
+
+async function confirmarCancelamento() {
+    try {
+        const res = await fetch(`/alugueis/${idParaCancelar}/cancelar`, { method: 'PUT' });
+        if (!res.ok) { mostrarAlerta('Erro ao cancelar aluguel.', 'danger'); return; }
+        modalCancelar.hide();
+        await carregarAlugueis();
+        mostrarAlerta('Aluguel cancelado.', 'success');
+    } catch {
+        mostrarAlerta('Erro de conexão.', 'danger');
+    }
+}
+
+function pedirExclusao(id) {
+    idParaExcluir = id;
+    document.getElementById('id-excluir').textContent = `#${id}`;
+    modalExcluir.show();
+}
+
+async function confirmarExclusao() {
+    try {
+        await fetch(`/alugueis/${idParaExcluir}`, { method: 'DELETE' });
+        modalExcluir.hide();
+        await carregarAlugueis();
+        mostrarAlerta('Aluguel excluído.', 'success');
+    } catch {
+        mostrarAlerta('Erro de conexão.', 'danger');
+    }
+}
+
+function formatarData(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function mostrarAlerta(msg, tipo) {
+    const el = document.getElementById('alerta');
+    el.className = tipo === 'success'
+        ? 'alert alert-beach-success rounded-3'
+        : 'alert alert-beach-danger rounded-3';
+    el.innerHTML = `<i class="bi bi-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-2"></i>${msg}`;
+    el.classList.remove('d-none');
+    setTimeout(() => el.classList.add('d-none'), 5000);
+}
+
+function mostrarAlertaModal(msg) {
+    const el = document.getElementById('modal-alerta');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+}
+
+// Suporte a ?clienteId=X vindo de clientes.html
+const params = new URLSearchParams(window.location.search);
+const clienteIdParam = params.get('clienteId');
+if (clienteIdParam) document.getElementById('filtro-cliente').value = clienteIdParam;
+
+carregarAlugueis().then(() => { if (clienteIdParam) aplicarFiltros(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quartos | Hospedagem Maraú</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg navbar-beach">
+    <div class="container">
+        <a class="navbar-brand" href="/index.html">
+            <span class="brand-icon"><i class="bi bi-water"></i></span>
+            Hospedagem Maraú
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/index.html">Início</a></li>
+                <li class="nav-item"><a class="nav-link" href="/clientes.html">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/quartos.html">Quartos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/alugueis.html">Aluguéis</a></li>
+                <li class="nav-item"><a class="nav-link" href="/residencias.html">Residências</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1" style="--bs-breadcrumb-divider:'›'">
+                <li class="breadcrumb-item"><a href="/index.html" style="color:rgba(255,255,255,.55);text-decoration:none">Início</a></li>
+                <li class="breadcrumb-item active" style="color:var(--teal)">Quartos</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-0"><i class="bi bi-door-open-fill me-2" style="color:var(--teal)"></i>Quartos</h2>
+                <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:.88rem">Cadastre e gerencie os quartos disponíveis</p>
+            </div>
+            <button class="btn btn-teal" onclick="abrirModalNovo()">
+                <i class="bi bi-plus-square-fill me-1"></i>Novo Quarto
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <!-- FILTRO POR TIPO -->
+    <div class="filter-bar d-flex align-items-center gap-2 flex-wrap">
+        <span style="font-size:.8rem;font-weight:600;color:#7A92A8;text-transform:uppercase;letter-spacing:.5px">Tipo:</span>
+        <button type="button" class="btn btn-sm btn-teal tipo-btn" onclick="filtrar('TODOS', this)">Todos</button>
+        <button type="button" class="btn btn-sm btn-outline-teal tipo-btn" onclick="filtrar('INDIVIDUAL', this)">
+            <i class="bi bi-person me-1"></i>Individual
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-teal tipo-btn" onclick="filtrar('CASAL', this)">
+            <i class="bi bi-people me-1"></i>Casal
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-teal tipo-btn" onclick="filtrar('FAMILIA', this)">
+            <i class="bi bi-house-heart me-1"></i>Família
+        </button>
+    </div>
+
+    <div id="alerta" class="alert d-none rounded-3 mb-3" role="alert"></div>
+
+    <!-- TABELA -->
+    <div class="card-beach">
+        <div class="table-responsive">
+            <table class="table table-beach align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tipo</th>
+                        <th>Valor Base</th>
+                        <th>Ar Cond.</th>
+                        <th>Hidromassagem</th>
+                        <th>Capacidade</th>
+                        <th>Detalhes</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-body">
+                    <tr><td colspan="8" class="text-center py-5" style="color:#A0B4C0">
+                        <i class="bi bi-hourglass-split fs-4 d-block mb-2"></i>Carregando...
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo Quarto -->
+<div class="modal fade" id="modalQuarto" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Novo Quarto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-alerta" class="alert alert-danger d-none rounded-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Quarto <span class="text-danger">*</span></label>
+                    <select id="f-tipo" class="form-select" onchange="alternarCampos()">
+                        <option value="">Selecione...</option>
+                        <option value="INDIVIDUAL">Individual</option>
+                        <option value="CASAL">Casal</option>
+                        <option value="FAMILIA">Família</option>
+                    </select>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Valor Base (R$) <span class="text-danger">*</span></label>
+                        <input type="number" id="f-valorBase" class="form-control" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Ar Condicionado</label>
+                        <select id="f-possuiAr" class="form-select">
+                            <option value="false">Não</option>
+                            <option value="true">Sim (+R$50)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Hidromassagem</label>
+                        <select id="f-possuiHidro" class="form-select">
+                            <option value="false">Não</option>
+                            <option value="true">Sim (+R$80)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Campos Individual -->
+                <div id="campos-individual" class="tipo-section d-none">
+                    <h6><i class="bi bi-person-fill me-1"></i>Quarto Individual</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Quantidade de Camas <span class="text-danger">*</span></label>
+                            <input type="number" id="f-qtdCamas" class="form-control" min="1" value="1">
+                            <div class="form-text">Capacidade = nº de camas. Adicional: +R$30 por cama extra.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos Casal -->
+                <div id="campos-casal" class="tipo-section d-none">
+                    <h6><i class="bi bi-people-fill me-1"></i>Quarto Casal</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Cama</label>
+                            <select id="f-tipoCama" class="form-select">
+                                <option value="CASAL">Casal (+R$20)</option>
+                                <option value="QUEEN">Queen (+R$50)</option>
+                                <option value="KING">King (+R$80)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Berço</label>
+                            <select id="f-temBerco" class="form-select">
+                                <option value="false">Não (cap. 2 hóspedes)</option>
+                                <option value="true">Sim (cap. 3 hóspedes, +R$30)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos Família -->
+                <div id="campos-familia" class="tipo-section d-none">
+                    <h6><i class="bi bi-house-heart-fill me-1"></i>Quarto Família</h6>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Camas Solteiro</label>
+                            <input type="number" id="f-qtdCamasSolteiro" class="form-control" min="0" value="0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Camas Casal</label>
+                            <input type="number" id="f-qtdCamasCasal" class="form-control" min="0" value="0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Camas Queen/King</label>
+                            <input type="number" id="f-qtdCamasQueenKing" class="form-control" min="0" value="0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Nº de Ambientes</label>
+                            <input type="number" id="f-qtdAmbientes" class="form-control" min="1" value="1">
+                        </div>
+                    </div>
+                    <div class="form-text mt-2">
+                        Capacidade = solteiro + casal×2 + queen/king×2. Desconto progressivo de 5% a 15%.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-teal" onclick="salvarQuarto()">
+                    <i class="bi bi-check-lg me-1"></i>Salvar Quarto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmação de Exclusão -->
+<div class="modal fade" id="modalExcluir" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#B03A2E">
+                <h5 class="modal-title">Confirmar exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Deseja excluir o quarto <strong id="id-excluir"></strong>?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExclusao()">
+                    <i class="bi bi-trash me-1"></i>Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-beach">
+    <i class="bi bi-water me-1"></i> Hospedagem Maraú · Península de Maraú, BA
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let quartos = [];
+let filtroAtual = 'TODOS';
+let idParaExcluir = null;
+const modalQuarto = new bootstrap.Modal(document.getElementById('modalQuarto'));
+const modalExcluir = new bootstrap.Modal(document.getElementById('modalExcluir'));
+
+const TIPO_LABEL = { INDIVIDUAL: 'Individual', CASAL: 'Casal', FAMILIA: 'Família' };
+const TIPO_BADGE = {
+    INDIVIDUAL: 'badge-teal',
+    CASAL: 'badge-sand',
+    FAMILIA: 'badge-coral'
+};
+
+async function carregarQuartos() {
+    try {
+        const res = await fetch('/quartos');
+        quartos = await res.json();
+        renderizar();
+    } catch {
+        mostrarAlerta('Erro ao carregar quartos.', 'danger');
+    }
+}
+
+function filtrar(tipo, btn) {
+    filtroAtual = tipo;
+    document.querySelectorAll('.tipo-btn').forEach(b => {
+        b.classList.remove('btn-teal');
+        b.classList.add('btn-outline-teal');
+    });
+    btn.classList.remove('btn-outline-teal');
+    btn.classList.add('btn-teal');
+    renderizar();
+}
+
+function renderizar() {
+    const lista = filtroAtual === 'TODOS' ? quartos : quartos.filter(q => q.tipoQuarto === filtroAtual);
+    const tbody = document.getElementById('tabela-body');
+
+    if (!lista.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5" style="color:#A0B4C0"><i class="bi bi-door-open fs-3 d-block mb-2"></i>Nenhum quarto encontrado.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = lista.map(q => {
+        const detalhes = buildDetalhes(q);
+        return `
+        <tr>
+            <td><span class="badge badge-ocean rounded-2">${q.id}</span></td>
+            <td><span class="badge ${TIPO_BADGE[q.tipoQuarto] || 'badge-ocean'} rounded-2">${TIPO_LABEL[q.tipoQuarto] || q.tipoQuarto}</span></td>
+            <td><strong>R$ ${(q.valorBase || 0).toFixed(2)}</strong></td>
+            <td>${q.possuiAr
+                ? '<i class="bi bi-check-circle-fill" style="color:var(--teal)"></i>'
+                : '<i class="bi bi-x-circle text-muted"></i>'}</td>
+            <td>${q.possuiHidro
+                ? '<i class="bi bi-check-circle-fill" style="color:var(--teal)"></i>'
+                : '<i class="bi bi-x-circle text-muted"></i>'}</td>
+            <td><span class="badge badge-ocean rounded-2">${q.capacidadeMaxima ?? '—'}</span> hóspedes</td>
+            <td><small style="color:#5A7282">${detalhes}</small></td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-outline-danger" onclick="pedirExclusao(${q.id})" title="Excluir">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function buildDetalhes(q) {
+    if (q.tipoQuarto === 'INDIVIDUAL') return `${q.qtdCamas ?? 1} cama(s)`;
+    if (q.tipoQuarto === 'CASAL') return `${q.tipoCama || 'CASAL'} | Berço: ${q.temBerco ? 'Sim' : 'Não'}`;
+    if (q.tipoQuarto === 'FAMILIA') return `S:${q.qtdCamasSolteiro} C:${q.qtdCamasCasal} QK:${q.qtdCamasQueenKing} | ${q.qtdAmbientes} amb.`;
+    return '';
+}
+
+function abrirModalNovo() {
+    document.getElementById('f-tipo').value = '';
+    document.getElementById('f-valorBase').value = '';
+    document.getElementById('f-possuiAr').value = 'false';
+    document.getElementById('f-possuiHidro').value = 'false';
+    document.getElementById('f-qtdCamas').value = 1;
+    document.getElementById('f-tipoCama').value = 'CASAL';
+    document.getElementById('f-temBerco').value = 'false';
+    document.getElementById('f-qtdCamasSolteiro').value = 0;
+    document.getElementById('f-qtdCamasCasal').value = 0;
+    document.getElementById('f-qtdCamasQueenKing').value = 0;
+    document.getElementById('f-qtdAmbientes').value = 1;
+    document.getElementById('modal-alerta').classList.add('d-none');
+    ['campos-individual','campos-casal','campos-familia'].forEach(id => document.getElementById(id).classList.add('d-none'));
+    modalQuarto.show();
+}
+
+function alternarCampos() {
+    const tipo = document.getElementById('f-tipo').value;
+    ['campos-individual','campos-casal','campos-familia'].forEach(id => document.getElementById(id).classList.add('d-none'));
+    if (tipo === 'INDIVIDUAL') document.getElementById('campos-individual').classList.remove('d-none');
+    if (tipo === 'CASAL') document.getElementById('campos-casal').classList.remove('d-none');
+    if (tipo === 'FAMILIA') document.getElementById('campos-familia').classList.remove('d-none');
+}
+
+async function salvarQuarto() {
+    const tipo = document.getElementById('f-tipo').value;
+    const valorBase = parseFloat(document.getElementById('f-valorBase').value);
+    const possuiAr = document.getElementById('f-possuiAr').value === 'true';
+    const possuiHidro = document.getElementById('f-possuiHidro').value === 'true';
+
+    if (!tipo) { mostrarAlertaModal('Selecione o tipo de quarto.'); return; }
+    if (isNaN(valorBase) || valorBase < 0) { mostrarAlertaModal('Informe um valor base válido.'); return; }
+
+    let payload = { valorBase, possuiAr, possuiHidro };
+    let endpoint = '/quartos/';
+
+    if (tipo === 'INDIVIDUAL') {
+        payload.qtdCamas = parseInt(document.getElementById('f-qtdCamas').value) || 1;
+        endpoint += 'individual';
+    } else if (tipo === 'CASAL') {
+        payload.tipoCama = document.getElementById('f-tipoCama').value;
+        payload.temBerco = document.getElementById('f-temBerco').value === 'true';
+        endpoint += 'casal';
+    } else {
+        payload.qtdCamasSolteiro = parseInt(document.getElementById('f-qtdCamasSolteiro').value) || 0;
+        payload.qtdCamasCasal = parseInt(document.getElementById('f-qtdCamasCasal').value) || 0;
+        payload.qtdCamasQueenKing = parseInt(document.getElementById('f-qtdCamasQueenKing').value) || 0;
+        payload.qtdAmbientes = parseInt(document.getElementById('f-qtdAmbientes').value) || 1;
+        endpoint += 'familia';
+    }
+
+    try {
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            mostrarAlertaModal(err.erro || 'Erro ao salvar quarto.');
+            return;
+        }
+        modalQuarto.hide();
+        await carregarQuartos();
+        mostrarAlerta('Quarto cadastrado com sucesso.', 'success');
+    } catch {
+        mostrarAlertaModal('Erro de conexão.');
+    }
+}
+
+function pedirExclusao(id) {
+    idParaExcluir = id;
+    document.getElementById('id-excluir').textContent = `#${id}`;
+    modalExcluir.show();
+}
+
+async function confirmarExclusao() {
+    if (!idParaExcluir) return;
+    try {
+        await fetch(`/quartos/${idParaExcluir}`, { method: 'DELETE' });
+        modalExcluir.hide();
+        await carregarQuartos();
+        mostrarAlerta('Quarto excluído.', 'success');
+    } catch {
+        mostrarAlerta('Erro ao excluir quarto.', 'danger');
+    }
+}
+
+function mostrarAlerta(msg, tipo) {
+    const el = document.getElementById('alerta');
+    el.className = tipo === 'success'
+        ? 'alert alert-beach-success rounded-3'
+        : 'alert alert-beach-danger rounded-3';
+    el.innerHTML = `<i class="bi bi-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-2"></i>${msg}`;
+    el.classList.remove('d-none');
+    setTimeout(() => el.classList.add('d-none'), 4000);
+}
+
+function mostrarAlertaModal(msg) {
+    const el = document.getElementById('modal-alerta');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+}
+
+carregarQuartos();
+</script>
+</body>
+</html>
