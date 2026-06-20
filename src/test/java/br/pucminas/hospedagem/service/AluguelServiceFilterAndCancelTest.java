@@ -9,6 +9,9 @@ import br.pucminas.hospedagem.model.QuartoCasal;
 import br.pucminas.hospedagem.model.QuartoIndividual;
 import br.pucminas.hospedagem.model.StatusAluguel;
 import br.pucminas.hospedagem.repository.AluguelRepository;
+import br.pucminas.hospedagem.repository.ClienteRepository;
+import br.pucminas.hospedagem.repository.QuartoRepository;
+import br.pucminas.hospedagem.repository.ResidenciaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,15 @@ class AluguelServiceFilterAndCancelTest {
 
     @Mock
     private AluguelRepository repository;
+
+    @Mock
+    private QuartoRepository quartoRepository;
+
+    @Mock
+    private ClienteRepository clienteRepository;
+
+    @Mock
+    private ResidenciaRepository residenciaRepository;
 
     @InjectMocks
     private AluguelService service;

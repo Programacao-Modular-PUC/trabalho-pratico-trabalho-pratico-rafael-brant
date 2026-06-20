@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.pucminas.hospedagem.dto.AluguelRequest;
 import br.pucminas.hospedagem.model.Aluguel;
 import br.pucminas.hospedagem.service.AluguelService;
 
@@ -49,8 +50,8 @@ public class AluguelController {
     }
 
     @PostMapping
-    public Aluguel criar(@RequestBody Aluguel aluguel) {
-        return service.salvar(aluguel);
+    public Aluguel criar(@RequestBody AluguelRequest request) {
+        return service.criarAluguel(request);
     }
 
     @PutMapping("/{id}")
@@ -59,6 +60,13 @@ public class AluguelController {
             aluguel.setId(id);
             return ResponseEntity.ok(service.salvar(aluguel));
         }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/recibo")
+    public ResponseEntity<String> imprimirRecibo(@PathVariable Long id) {
+        return service.buscarPorId(id)
+                .map(a -> ResponseEntity.ok(a.imprimirRecibo()))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}/cancelar")

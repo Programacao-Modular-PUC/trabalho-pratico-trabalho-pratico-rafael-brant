@@ -3,6 +3,7 @@ package br.pucminas.hospedagem.model;
 import br.pucminas.hospedagem.exception.DataInvalidaException;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 @Entity
@@ -26,6 +27,9 @@ public class Aluguel {
     @ManyToOne
     private Cliente cliente;
 
+    @ManyToOne
+    private Residencia residencia;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Pagamento pagamento;
 
@@ -41,13 +45,20 @@ public class Aluguel {
         this.cliente = cliente;
     }
 
-    //Calcula o número de diárias (noites) entre a entrada e saída
+    // Regra: diárias iniciam às 12h.
+    // Entrada após 12h → conta como diária completa.
+    // Saída após 12h → adiciona nova diária.
     public int calcularDiarias() {
         validarDatas();
-        return (int) ChronoUnit.DAYS.between(dataHoraEntrada, dataHoraSaida);
+        int dias = (int) ChronoUnit.DAYS.between(
+                dataHoraEntrada.toLocalDate(),
+                dataHoraSaida.toLocalDate());
+        if (dataHoraSaida.getHour() >= 12) {
+            dias++;
+        }
+        return Math.max(1, dias);
     }
 
-    //Calcula o valor final da hospedagem
     public double calcularValorFinal() {
         if (quarto == null) {
             throw new IllegalStateException("Quarto não pode ser nulo.");
@@ -57,7 +68,6 @@ public class Aluguel {
         return diarias * valorDiaria;
     }
 
-    // Valida as datas de entrada e saída
     public void validarDatas() {
         if (dataHoraEntrada == null || dataHoraSaida == null) {
             throw new DataInvalidaException("Datas de entrada e saída não podem ser nulas.");
@@ -80,7 +90,17 @@ public class Aluguel {
     }
 
     public String imprimirRecibo() {
-        return "Recibo de hospedagem - Aluguel ID: " + id;
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return String.format(
+                "Data e horário de entrada: %s%n" +
+                "Data e horário de saída: %s%n" +
+                "Número de diárias: %d%n" +
+                "Total à pagar: R$ %.2f",
+                dataHoraEntrada != null ? dataHoraEntrada.format(fmt) : "—",
+                dataHoraSaida   != null ? dataHoraSaida.format(fmt)   : "—",
+                qtdDiarias,
+                valorTotal
+        );
     }
 
     public Long getId() { return id; }
@@ -109,6 +129,9 @@ public class Aluguel {
 
     public Cliente getCliente() { return cliente; }
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
+
+    public Residencia getResidencia() { return residencia; }
+    public void setResidencia(Residencia residencia) { this.residencia = residencia; }
 
     public Pagamento getPagamento() { return pagamento; }
     public void setPagamento(Pagamento pagamento) { this.pagamento = pagamento; }
