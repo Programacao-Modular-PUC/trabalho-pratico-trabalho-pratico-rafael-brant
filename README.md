@@ -336,5 +336,5 @@ src/
 
 ---
 
-**Aluno:** Rafael Brant  
+**Alunos:** Rafael Brant e João Paulo Gobira
 **Disciplina:** Programação Modular — PUC Minas
