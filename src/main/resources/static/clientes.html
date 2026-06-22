@@ -107,12 +107,14 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">CPF <span class="text-danger">*</span></label>
-                    <input type="text" id="f-cpf" class="form-control" placeholder="000.000.000-00">
+                    <input type="text" id="f-cpf" class="form-control" placeholder="000.000.000-00"
+                           oninput="mascaraCpf(this)" maxlength="14">
                 </div>
                 <div class="row g-3 mb-3">
                     <div class="col-6">
                         <label class="form-label">Telefone</label>
-                        <input type="text" id="f-telefone" class="form-control" placeholder="(00) 00000-0000">
+                        <input type="text" id="f-telefone" class="form-control" placeholder="(00) 00000-0000"
+                               oninput="mascaraTelefone(this)" maxlength="15">
                     </div>
                     <div class="col-6">
                         <label class="form-label">E-mail</label>
@@ -249,6 +251,18 @@ async function salvarCliente() {
         mostrarAlertaModal('Nome é obrigatório.');
         return;
     }
+    if (!payload.cpf) {
+        mostrarAlertaModal('CPF é obrigatório.');
+        return;
+    }
+    if (!validarCpf(payload.cpf)) {
+        mostrarAlertaModal('CPF inválido. Verifique o número informado.');
+        return;
+    }
+    if (payload.telefone && !validarTelefone(payload.telefone)) {
+        mostrarAlertaModal('Telefone inválido. Use o formato (00) 00000-0000 ou (00) 0000-0000.');
+        return;
+    }
 
     try {
         const res = await fetch(id ? `/clientes/${id}` : '/clientes', {
@@ -304,6 +318,46 @@ function mostrarAlertaModal(msg) {
 }
 
 function escHtml(s) { return (s || '').replace(/'/g, "\\'"); }
+
+function mascaraCpf(input) {
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    v = v.replace(/^(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+    v = v.replace(/\.(\d{3})(\d)/, '.$1-$2');
+    input.value = v;
+}
+
+function mascaraTelefone(input) {
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length <= 10) {
+        v = v.replace(/^(\d{2})(\d{1,4})/, '($1) $2');
+        v = v.replace(/(\d{4})(\d{1,4})$/, '$1-$2');
+    } else {
+        v = v.replace(/^(\d{2})(\d{1,5})/, '($1) $2');
+        v = v.replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+    }
+    input.value = v;
+}
+
+function validarCpf(cpf) {
+    const n = cpf.replace(/\D/g, '');
+    if (n.length !== 11 || /^(\d)\1+$/.test(n)) return false;
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(n[i]) * (10 - i);
+    let r = (soma * 10) % 11;
+    if (r >= 10) r = 0;
+    if (r !== parseInt(n[9])) return false;
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(n[i]) * (11 - i);
+    r = (soma * 10) % 11;
+    if (r >= 10) r = 0;
+    return r === parseInt(n[10]);
+}
+
+function validarTelefone(tel) {
+    const n = tel.replace(/\D/g, '');
+    return n.length === 10 || n.length === 11;
+}
 
 carregarClientes();
 </script>
