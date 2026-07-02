@@ -235,6 +235,16 @@ body {
 
 .action-btn i {
   font-size: 1.7rem;
+  transition: transform var(--transition);
+}
+
+.action-btn:hover i {
+  transform: scale(1.18) rotate(-4deg);
+}
+
+.action-btn:active {
+  transform: translateY(-1px) scale(.97) !important;
+  transition-duration: .09s;
 }
 
 .action-btn-teal {
@@ -260,6 +270,7 @@ body {
   background: #0a2f4d;
   color: #fff;
   transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(13,59,94,.35);
 }
 
 .action-btn-sand {
@@ -272,6 +283,7 @@ body {
   background: #d5a564;
   color: #fff;
   transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(232,184,122,.45);
 }
 
 .action-btn-coral {
@@ -284,6 +296,7 @@ body {
   background: #c96b4a;
   color: #fff;
   transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(224,123,90,.40);
 }
 
 /* ─── TABLE ─── */
@@ -320,6 +333,27 @@ body {
 .badge-coral  { background: #FCE3DB; color: #9A3B22; font-weight: 600; }
 
 /* ─── BUTTONS ─── */
+.btn {
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease,
+              background .18s ease, color .18s ease, border-color .18s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.btn:active {
+  transform: translateY(0) scale(.96);
+  transition-duration: .09s;
+  filter: brightness(.97);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 .2rem rgba(14,181,160,.35);
+}
+
 .btn-teal {
   background: var(--teal);
   color: #fff;
